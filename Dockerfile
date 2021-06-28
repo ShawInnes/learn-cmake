@@ -25,4 +25,10 @@ RUN apt-get install -y --no-install-recommends \
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 RUN pip3 install conan
-RUN conan profile update settings.compiler.libcxx=libstdc++11 default
+
+RUN git clone --progress --verbose https://github.com/raspberrypi/tools.git --depth=1 pitools
+
+ENV BUILD_FOLDER /build
+
+WORKDIR ${BUILD_FOLDER}
+

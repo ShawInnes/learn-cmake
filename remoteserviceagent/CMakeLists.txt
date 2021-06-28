@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(PROJECT_NAME RemoteServiceAgent)
-
 set(CMAKE_CXX_STANDARD 11)
 
 project(${PROJECT_NAME} LANGUAGES C CXX VERSION 1.0.0 DESCRIPTION "Remote Service Agent")
@@ -16,6 +15,7 @@ configure_file(${PROJECT_SOURCE_DIR}/include/version_config.h.in ${CMAKE_BINARY_
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS thread chrono system REQUIRED)
+find_package(GTest REQUIRED)
 
 # Build Library
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -46,6 +46,7 @@ endif ()
 file(GLOB TESTS ${PROJECT_SOURCE_DIR}/tests/*.cpp)
 add_executable(${TEST_PROJECT_NAME} ${TESTS})
 message(STATUS "Linking against Boost Libraries: ${Boost_LIBRARIES}")
+message(STATUS "Linking against Conan Libraries: ${CONAN_LIBS}")
 target_link_libraries(${TEST_PROJECT_NAME} PUBLIC ${PROJECT_NAME} ${CONAN_LIBS})
 
 ## Discover Tests
@@ -62,6 +63,7 @@ configure_package_config_file(cmake/${PROJECT_NAME}Config.cmake.in
         INSTALL_DESTINATION "${LIB_INSTALL_DIR}/${PROJECT_NAME}/cmake"
         PATH_VARS
         )
+
 write_basic_package_version_file(
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
         VERSION ${PROJECT_VERSION}
