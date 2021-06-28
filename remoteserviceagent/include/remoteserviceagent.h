@@ -19,7 +19,8 @@ bool IsOdd(int n);
 
 namespace RemoteServicesAgent {
     const char* getLibInterfaceName();
-    const char *getLibInterfaceVersion();
+    const char* getLibInterfaceVersion();
+    void TestThreads();
 }
 
 #endif //REMOTESERVICEAGENT_LIBRARY_H

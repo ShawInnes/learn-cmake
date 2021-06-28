@@ -23,5 +23,9 @@ int main() {
     isPrime = IsPrime(question);
     printf("Question = %d\nIsPrime = %d\n", question, isPrime);
 
+    printf("\n\n\n");
+
+    RemoteServicesAgent::TestThreads();
+
     return 0;
 }
