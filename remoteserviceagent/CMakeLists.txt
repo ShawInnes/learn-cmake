@@ -15,7 +15,7 @@ configure_file(${PROJECT_SOURCE_DIR}/include/version_config.h.in ${CMAKE_BINARY_
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS thread chrono REQUIRED)
+find_package(Boost COMPONENTS thread chrono system REQUIRED)
 
 # Build Library
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -25,6 +25,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES} ${CMAKE_BINARY_DIR}/generated/vers
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories($<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/generated>)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
 generate_export_header(${PROJECT_NAME})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
@@ -45,7 +46,7 @@ endif ()
 file(GLOB TESTS ${PROJECT_SOURCE_DIR}/tests/*.cpp)
 add_executable(${TEST_PROJECT_NAME} ${TESTS})
 message(STATUS "Linking against Boost Libraries: ${Boost_LIBRARIES}")
-target_link_libraries(${TEST_PROJECT_NAME} PUBLIC ${CONAN_LIBS} ${PROJECT_NAME} ${Boost_LIBRARIES})
+target_link_libraries(${TEST_PROJECT_NAME} PUBLIC ${PROJECT_NAME} ${CONAN_LIBS})
 
 ## Discover Tests
 include(GoogleTest)
