@@ -1,0 +1,6 @@
+set(RemoteServiceAgent_VERSION @VERSION@)
+
+@PACKAGE_INIT@
+
+set(RemoteServiceAgent_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include")
+set(RemoteServiceAgent_LIB_DIR "@CMAKE_INSTALL_PREFIX@/lib")

@@ -1,0 +1,16 @@
+#ifndef VERSION_CONFIG_H
+#define VERSION_CONFIG_H
+
+namespace RemoteServicesAgent {
+    const char* getLibInterfaceName()
+    {
+        return "@PROJECT_NAME@";
+    }
+
+    const char* getLibInterfaceVersion()
+    {
+        return "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@";
+    }
+}
+
+#endif // VERSION_CONFIG_H

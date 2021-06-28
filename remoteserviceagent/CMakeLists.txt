@@ -1,0 +1,84 @@
+cmake_minimum_required(VERSION 3.19)
+
+set(PROJECT_NAME RemoteServiceAgent)
+
+project(${PROJECT_NAME} LANGUAGES C CXX VERSION 1.0.0 DESCRIPTION "Remote Service Agent")
+
+enable_testing()
+
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+set(CMAKE_MACOSX_RPATH OFF)
+
+# Build Library
+file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB HEADERS ${PROJECT_SOURCE_DIR}/src/*.h)
+
+# Write Version to Library
+message("PROJECT_VERSION = ${PROJECT_VERSION}")
+configure_file( ${PROJECT_SOURCE_DIR}/include/version_config.h.in ${CMAKE_BINARY_DIR}/generated/version_config.h )
+
+include(GenerateExportHeader)
+add_library(${PROJECT_NAME} SHARED ${SOURCES} ${CMAKE_BINARY_DIR}/generated/version_config.h ${HEADERS} )
+include_directories($<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/generated>)
+generate_export_header(${PROJECT_NAME})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${PROJECT_SOURCE_DIR}/include/remoteserviceagent.h)
+
+# Build Tests
+set(TEST_PROJECT_NAME ${PROJECT_NAME}_test)
+
+if ("${CMAKE_C_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang"
+        OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
+    message("Building with llvm Code Coverage Tools")
+    set(CMAKE_CXX_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+elseif(CMAKE_COMPILER_IS_GNUCXX)
+    message("Building with lcov Code Coverage Tools")
+    set(CMAKE_CXX_FLAGS "--coverage")
+endif()
+
+file(GLOB TESTS ${PROJECT_SOURCE_DIR}/tests/*.cpp)
+add_executable(${TEST_PROJECT_NAME} ${TESTS})
+target_link_libraries(${TEST_PROJECT_NAME} PUBLIC ${CONAN_LIBS} ${PROJECT_NAME})
+
+## Discover Tests
+include(GoogleTest)
+gtest_discover_tests(${TEST_PROJECT_NAME})
+
+## Install Steps
+
+set(INCLUDE_INSTALL_DIR include/ )
+set(LIB_INSTALL_DIR lib/ )
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(cmake/${PROJECT_NAME}Config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    INSTALL_DESTINATION "${LIB_INSTALL_DIR}/${PROJECT_NAME}/cmake"
+    PATH_VARS
+)
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+install(TARGETS ${PROJECT_NAME}
+        EXPORT ${PROJECT_NAME}Targets
+        LIBRARY DESTINATION lib
+        INCLUDES DESTINATION include
+        RUNTIME DESTINATION bin
+        PUBLIC_HEADER DESTINATION include)
+
+install(EXPORT ${PROJECT_NAME}Targets
+        FILE ${PROJECT_NAME}Targets.cmake
+        NAMESPACE ${PROJECT_NAME}::
+        DESTINATION ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME}
+)
+
+install(
+        FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        DESTINATION ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME}
+)

@@ -1,0 +1,11 @@
+[requires]
+gtest/1.8.1
+# @lasote/stable
+
+[generators]
+cmake
+cmake_multi
+cmake_find_package
+
+[options]
+gtest:shared=False
