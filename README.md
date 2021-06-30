@@ -7,9 +7,6 @@ docker run -it -v ~/devops/learn-cmake:/src ubuntu-build-agent
 
 ```bash
 cd /build
-conan profile new default --detect
-conan profile update settings.compiler.libcxx=libstdc++11 default
-conan install /src
 cmake /src
 make
 ```
@@ -45,5 +42,9 @@ tar zxvf boost_1_76_0.tar.gz
 cd boost_1_76_0
 ./bootstrap.sh
 ./b2 install toolset=gcc-arm --prefix=${SYSROOT} --with-thread --with-chrono --with-system --stagedir=. stage
+
+wget https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
+tar zxvf release-1.11.0.tar.gz
+cd googletest-release-1.11.0
 
 ```

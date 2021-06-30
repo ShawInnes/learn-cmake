@@ -3,9 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 set(PROJECT_NAME RemoteServiceAgent)
 set(CMAKE_CXX_STANDARD 11)
 
-project(${PROJECT_NAME} LANGUAGES C CXX VERSION 1.0.0 DESCRIPTION "Remote Service Agent")
-
-enable_testing()
+project(${PROJECT_NAME} LANGUAGES C CXX VERSION 1.0.1 DESCRIPTION "Remote Service Agent")
 
 set(CMAKE_MACOSX_RPATH OFF)
 
@@ -15,7 +13,16 @@ configure_file(${PROJECT_SOURCE_DIR}/include/version_config.h.in ${CMAKE_BINARY_
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS thread chrono system REQUIRED)
-find_package(GTest REQUIRED)
+
+enable_testing()
+
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG        release-1.11.0
+)
+FetchContent_MakeAvailable(googletest)
 
 # Build Library
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -46,8 +53,7 @@ endif ()
 file(GLOB TESTS ${PROJECT_SOURCE_DIR}/tests/*.cpp)
 add_executable(${TEST_PROJECT_NAME} ${TESTS})
 message(STATUS "Linking against Boost Libraries: ${Boost_LIBRARIES}")
-message(STATUS "Linking against Conan Libraries: ${CONAN_LIBS}")
-target_link_libraries(${TEST_PROJECT_NAME} PUBLIC ${PROJECT_NAME} ${CONAN_LIBS})
+target_link_libraries(${TEST_PROJECT_NAME} PUBLIC ${PROJECT_NAME} gtest_main)
 
 ## Discover Tests
 include(GoogleTest)
