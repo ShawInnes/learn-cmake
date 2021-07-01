@@ -14,7 +14,7 @@ public:
     /**
      * Initialises the Remote Service Agent
      */
-    void Init();
+     void Init();
 
     /**
      * Starts the Remote Service Agent

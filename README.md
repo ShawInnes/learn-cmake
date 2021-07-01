@@ -4,18 +4,35 @@
 docker build . -t ubuntu-build-agent
 docker run -it -v ~/devops/learn-cmake:/src ubuntu-build-agent
 
-
+### Compile on Linux/OSX
 ```bash
 cd /build
 cmake /src
 make
 ```
 
+### Compile on Windows
+```bash
+"C:\Program Files\CMake\bin\cmake.exe" -G "Visual Studio 16" -DBOOST_ROOT=D:\boost ..
+msbuild cppdemo.sln
+```
+
+### Compile for ARM
 ```bash
 cmake -DCMAKE_TOOLCHAIN_FILE=/src/cross-compile/Toolchain-rpi.cmake /src
 ```
 
 ## TODO
+
+### Install Boost - Windows
+```bash
+wget https://boostorg.jfrog.io/artifactory/main/release/1.75.0/source/boost_1_75_0.tar.gz
+tar zxvf boost_1_75_0.tar.gz
+  
+cd boost_1_75_0
+./bootstrap.bat
+./b2 --with-thread --with-chrono --with-system --prefix=d:/boost link=shared variant=release threading=multi install
+```
 
 ### Install Boost - Cross Compile
 ```bash
@@ -36,11 +53,10 @@ echo "import option ; import feature ; using gcc : arm : arm-linux-gnueabihf-g++
 mkdir -p $RPI_ROOT/deps
 cd $RPI_ROOT/deps
 
-wget https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz
-tar zxvf boost_1_76_0.tar.gz
+wget https://boostorg.jfrog.io/artifactory/main/release/1.75.0/source/boost_1_75_0.tar.gz
+tar zxvf boost_1_75_0.tar.gz
   
-cd boost_1_76_0
+cd boost_1_75_0
 ./bootstrap.sh
 ./b2 install toolset=gcc-arm --prefix=${SYSROOT} --with-thread --with-chrono --with-system --stagedir=. stage
-
 ```
