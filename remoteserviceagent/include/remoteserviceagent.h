@@ -1,27 +1,41 @@
 #ifndef REMOTESERVICEAGENT_LIBRARY_H
 #define REMOTESERVICEAGENT_LIBRARY_H
-#include <stdbool.h>
 
-// Returns n! (the factorial of n).  For negative n, n! is defined to be 1.
-int Factorial(int n);
+const char *getLibInterfaceName();
 
-// Returns true if n is a prime number.
-bool IsPrime(int n);
+const char *getLibInterfaceVersion();
 
-// Returns n * 2
-int Double(int n);
+class RemoteServiceAgent {
+private:
 
-// Returns true if n is an even number.
-bool IsEven(int n);
+public:
+    RemoteServiceAgent();
 
-// Returns true if n is an even number.
-bool IsOdd(int n);
+    /**
+     * Initialises the Remote Service Agent
+     */
+    void Init();
 
-namespace RemoteServicesAgent {
-    const char* getLibInterfaceName();
-    const char* getLibInterfaceVersion();
-    void TestThreads();
-}
+    /**
+     * Starts the Remote Service Agent
+     */
+    void Start();
+
+    /**
+     * Sends a notification to the Remote Service Agent indicating that the calling application is still alive
+     */
+    void SendHeartBeat();
+
+    /**
+     * Sends an explicit message to the Remote Service Agent
+     */
+    void SendEvent();
+
+    /**
+     * Stops the Remote Service Agent
+     */
+    void Stop();
+};
 
 #endif //REMOTESERVICEAGENT_LIBRARY_H
 

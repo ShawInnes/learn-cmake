@@ -3,19 +3,21 @@
 
 #include "remoteserviceagent.h"
 
-namespace RemoteServicesAgent {
-    const char* getLibInterfaceName()
-    {
-        return "@PROJECT_NAME@";
-    }
+/**
+ * Returns the name of the Library
+ * @return a string such as 'RemoteServiceAgent' depicting the library name
+ */
+const char *getLibInterfaceName() {
+    return "@PROJECT_NAME@";
+}
 
-    const char* getLibInterfaceVersion()
-    {
-        return "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@";
-    }
-
-    void TestThreads();
-
+/**
+ * Returns the SemVer version of the Library
+ * @return a string of `Major.Minor.Patch`
+ */
+const char *getLibInterfaceVersion() {
+    return "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@";
 }
 
 #endif // VERSION_CONFIG_H
+

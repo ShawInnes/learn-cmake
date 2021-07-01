@@ -1,31 +1,70 @@
-#include <stdio.h>
+#include <iostream>
 #include "remoteserviceagent.h"
+#include <boost/thread.hpp>
+
+boost::thread *instrumentThread;
+RemoteServiceAgent *rsa;
+
+void instrumentFunc() {
+    std::cout << "instrumentFunc start" << std::endl;
+
+    int counter = 0;
+
+    for (;;) {
+        std::cout << "instrumentFunc " << ++counter << std::endl;
+
+        try {
+            // Sleep and check for interrupt.
+            // To check for interrupt without sleep,
+            // use boost::this_thread::interruption_point()
+            // which also throws boost::thread_interrupted
+            boost::this_thread::sleep_for(boost::chrono::milliseconds(500));
+        }
+        catch (boost::thread_interrupted &) {
+            std::cout << "instrumentFunc cleanup" << std::endl;
+            std::cout << "instrumentFunc exit" << std::endl;
+            return;
+        }
+    }
+}
+
+void Start() {
+    std::cout << "Instrument->Start()\n";
+
+    instrumentThread = new boost::thread(&instrumentFunc);
+
+    rsa = new RemoteServiceAgent();
+    rsa->Init();
+    rsa->Start();
+
+    std::cout << "Instrument::Start Done" << std::endl;
+}
+
+void Stop() {
+    std::cout << "Instrument->Stop()\n";
+
+    rsa->Stop();
+
+    // signal thread to stop
+    instrumentThread->interrupt();
+
+    // wait until thread actually exits
+    instrumentThread->join();
+
+    std::cout << "Instrument->Stop Done" << std::endl;
+}
 
 int main() {
-    printf("Name %s\n", RemoteServicesAgent::getLibInterfaceName());
-    printf("Version %s\n", RemoteServicesAgent::getLibInterfaceVersion());
+    printf("Name %s\n", getLibInterfaceName());
+    printf("Version %s\n", getLibInterfaceVersion());
 
-    int question = 323;
-    int factorial = 0;
-    bool isEven = false;
-    bool isOdd = false;
-    bool isPrime = false;
+    Start();
 
-    factorial = Factorial(question);
-    printf("Question = %d\nFactorial = %d\n", question, factorial);
+    // Wait for Enter
+    char ch;
+    std::cin.get(ch);
 
-    isEven = IsEven(question);
-    printf("Question = %d\nIsEven = %d\n", question, isEven);
-
-    isOdd = IsOdd(question);
-    printf("Question = %d\nIsOdd = %d\n", question, isOdd);
-
-    isPrime = IsPrime(question);
-    printf("Question = %d\nIsPrime = %d\n", question, isPrime);
-
-    printf("\n\n\n");
-
-    RemoteServicesAgent::TestThreads();
+    Stop();
 
     return 0;
 }

@@ -43,8 +43,4 @@ cd boost_1_76_0
 ./bootstrap.sh
 ./b2 install toolset=gcc-arm --prefix=${SYSROOT} --with-thread --with-chrono --with-system --stagedir=. stage
 
-wget https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
-tar zxvf release-1.11.0.tar.gz
-cd googletest-release-1.11.0
-
 ```

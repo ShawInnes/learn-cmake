@@ -17,6 +17,7 @@ RUN apt-get install -y --no-install-recommends \
                     tar \
                     ca-certificates \
                     libboost-all-dev \
+                    wget \
                     && \
     apt-get autoclean && \
     apt-get autoremove && \

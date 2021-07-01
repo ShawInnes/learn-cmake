@@ -1,50 +1,63 @@
+#include <boost/thread.hpp>
+#include <boost/chrono.hpp>
+#include <iostream>
 #include <remoteserviceagent.h>
 #include <version_config.h>
 
-// Returns n! (the factorial of n).  For negative n, n! is defined to be 1.
-int Factorial(int n) {
-    int result = 1;
-    for (int i = 1; i <= n; i++) {
-        result *= i;
+RemoteServiceAgent::RemoteServiceAgent() {
+    std::cout << "RemoteServiceAgent::ctor()" << std::endl;
+}
+
+void RemoteServiceAgent::Init() {
+    std::cout << "RemoteServiceAgent->Init()" << std::endl;
+}
+
+boost::thread *remoteServiceAgentThread;
+
+void wait(int milliseconds) {
+    boost::this_thread::sleep_for(boost::chrono::milliseconds{milliseconds});
+}
+
+void remoteServiceFunc() {
+    std::cout << "remoteServiceFunc start" << std::endl;
+
+    int counter = 0;
+
+    for (;;) {
+        std::cout << "remoteServiceFunc " << ++counter << std::endl;
+
+        try {
+            // Sleep and check for interrupt.
+            // To check for interrupt without sleep,
+            // use boost::this_thread::interruption_point()
+            // which also throws boost::thread_interrupted
+            wait(500);
+        }
+        catch (boost::thread_interrupted &) {
+            std::cout << "remoteServiceFunc cleanup (2000ms)" << std::endl;
+            wait(2000);
+            std::cout << "remoteServiceFunc exit" << std::endl;
+            return;
+        }
     }
-
-    return result;
 }
 
-// Returns n * 2
-int Double(int n) {
-    return n * 2;
+void RemoteServiceAgent::Start() {
+    std::cout << "RemoteServiceAgent->Start()\n";
+
+    remoteServiceAgentThread = new boost::thread(&remoteServiceFunc);
+
+    std::cout << "RemoteServiceAgent::Start Done" << std::endl;
 }
 
-// Returns true iff n is a prime number.
-bool IsPrime(int n) {
-    // Trivial case 1: small numbers
-    if (n <= 1) return false;
+void RemoteServiceAgent::Stop() {
+    std::cout << "RemoteServiceAgent->Stop()\n";
 
-    // Trivial case 2: even numbers
-    if (n % 2 == 0) return n == 2;
+    // signal thread to stop
+    remoteServiceAgentThread->interrupt();
 
-    // Now, we have that n is odd and n >= 3.
+    // wait until thread actually exits
+    remoteServiceAgentThread->join();
 
-    // Try to divide n by every odd number i, starting from 3
-    for (int i = 3; ; i += 2) {
-        // We only have to try i up to the square root of n
-        if (i > n/i) break;
-
-        // Now, we have i <= n/i < n.
-        // If n is divisible by i, n is not prime.
-        if (n % i == 0) return false;
-    }
-
-    // n has no integer factor in the range (1, n), and thus is prime.
-    return true;
+    std::cout << "RemoteServiceAgent::Stop Done" << std::endl;
 }
-
-bool IsEven(int n) {
-    return n % 2 == 0;
-}
-
-bool IsOdd(int n) {
-    return n % 2 == 1;
-}
-
