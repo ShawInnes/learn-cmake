@@ -13,6 +13,7 @@ RUN apt-get install -y --no-install-recommends \
                     python3-pip \
                     build-essential \
                     cmake \
+                    doxygen \
                     unzip \
                     tar \
                     ca-certificates \
