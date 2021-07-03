@@ -14,7 +14,7 @@ public:
     /**
      * Initialises the Remote Service Agent
      */
-     void Init();
+    void Init();
 
     /**
      * Starts the Remote Service Agent
@@ -35,6 +35,11 @@ public:
      * Stops the Remote Service Agent
      */
     void Stop();
+};
+
+class TestAzureIoT {
+public:
+    void Init();
 };
 
 #endif //REMOTESERVICEAGENT_LIBRARY_H

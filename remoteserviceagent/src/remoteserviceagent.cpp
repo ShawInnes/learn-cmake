@@ -1,6 +1,6 @@
+#include <iostream>
 #include <boost/thread.hpp>
 #include <boost/chrono.hpp>
-#include <iostream>
 #include <remoteserviceagent.h>
 #include <version_config.h>
 
@@ -46,6 +46,9 @@ void RemoteServiceAgent::Start() {
     std::cout << "RemoteServiceAgent->Start()\n";
 
     remoteServiceAgentThread = new boost::thread(&remoteServiceFunc);
+
+    TestAzureIoT * iot = new TestAzureIoT();
+    iot->Init();
 
     std::cout << "RemoteServiceAgent::Start Done" << std::endl;
 }

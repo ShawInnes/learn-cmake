@@ -23,10 +23,29 @@ include(FetchContent)
 FetchContent_Declare(
         googletest
         URL https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
-#        GIT_REPOSITORY https://github.com/google/googletest.git
-#        GIT_TAG        release-1.11.0
 )
 FetchContent_MakeAvailable(googletest)
+
+#if (CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
+#    execute_process(
+#            COMMAND brew --prefix OpenSSL
+#            RESULT_VARIABLE BREW_OPENSSL
+#            OUTPUT_VARIABLE BREW_OPENSSL_PREFIX
+#            OUTPUT_STRIP_TRAILING_WHITESPACE
+#    )
+#    if (BREW_OPENSSL EQUAL 0 AND EXISTS "${BREW_OPENSSL_PREFIX}")
+#        message(STATUS "Found OpenSSL installed by Homebrew at ${BREW_OPENSSL_PREFIX}")
+#        set(OPENSSL_ROOT_DIR "${BREW_OPENSSL_PREFIX}/")
+#        set(OPENSSL_INCLUDE_DIR "${BREW_OPENSSL_PREFIX}/include")
+#        set(OPENSSL_LIBRARIES "${BREW_OPENSSL_PREFIX}/lib")
+#        set(OPENSSL_CRYPTO_LIBRARY "${BREW_OPENSSL_PREFIX}/lib/libcrypto.dylib")
+#    endif()
+#endif()
+#
+#find_package(OpenSSL REQUIRED)
+
+find_library(cf_foundation Foundation)
+find_library(cf_network CFNetwork)
 
 # Build Library
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -35,10 +54,29 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${CMAKE_BINARY_DIR}/generated/version_config.h)
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${OPENSSL_INCLUDE_DIR})
+message("${OPENSSL_INCLUDE_DIR}")
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories($<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/generated>)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES}
+        /usr/local/lib/libparson.a
+        /usr/local/lib/libserializer.a
+        /usr/local/lib/libiothub_client.a
+        /usr/local/lib/libiothub_client_mqtt_transport.a
+        /usr/local/lib/libaziotsharedutil.a
+        /usr/local/lib/libumqtt.a
+        /usr/local/lib/libuhttp.a
+        /usr/local/lib/libprov_auth_client.a
+        /usr/local/lib/libprov_device_client.a
+        /usr/local/lib/libprov_device_ll_client.a
+        /usr/local/lib/libprov_mqtt_transport.a
+        /usr/local/lib/libhsm_security_client.a
+        /usr/local/lib/libmsr_riot.a
+        /usr/local/lib/libutpm.a
+        ${cf_foundation}
+        ${cf_network}
+        )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${PROJECT_SOURCE_DIR}/include/remoteserviceagent.h)
@@ -68,15 +106,15 @@ if (CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
         message("Doxygen build started")
 
         # note the option ALL which allows to build the docs together with the application
-        add_custom_target( doc_doxygen ALL
+        add_custom_target(doc_doxygen ALL
                 COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                 COMMENT "Generating API documentation with Doxygen"
-                VERBATIM )
+                VERBATIM)
     else (DOXYGEN_FOUND)
         message("Doxygen need to be installed to generate the doxygen documentation")
     endif (DOXYGEN_FOUND)
-endif()
+endif ()
 
 ## Install Steps
 set(INCLUDE_INSTALL_DIR include/)

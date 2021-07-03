@@ -23,6 +23,17 @@ cmake -DCMAKE_TOOLCHAIN_FILE=/src/cross-compile/Toolchain-rpi.cmake /src
 ```
 
 ## TODO
+### Install Azure IoT C SDK
+```bash
+git clone https://github.com/Azure/azure-iot-sdk-c.git
+git submodule update --init
+mkdir cmake-build
+pushd cmake-build
+cmake -DCMAKE_INSTALL_PREFIX=../staged -Dskip_samples=ON -Duse_prov_client=ON -Duse_amqp=OFF -Duse_http=ON -Duse_mqtt=ON -Dbuild_service_client=OFF -Dbuild_provisioning_service_client=OFF ..
+make -j4
+sudo make install
+popd
+```
 
 ### Install Boost - Windows
 ```bash
