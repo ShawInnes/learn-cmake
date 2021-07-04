@@ -15,7 +15,7 @@ configure_file(${PROJECT_SOURCE_DIR}/include/version_config.h.in ${CMAKE_BINARY_
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost COMPONENTS thread chrono system REQUIRED)
+find_package(Boost COMPONENTS thread chrono system log REQUIRED)
 
 enable_testing()
 
@@ -46,6 +46,7 @@ FetchContent_MakeAvailable(googletest)
 
 find_library(cf_foundation Foundation)
 find_library(cf_network CFNetwork)
+find_library(curl curl)
 
 # Build Library
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -76,8 +77,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES}
         /usr/local/lib/libutpm.a
         ${cf_foundation}
         ${cf_network}
+        ${curl}
         )
-
+message("curl ${curl}")
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${PROJECT_SOURCE_DIR}/include/remoteserviceagent.h)
 

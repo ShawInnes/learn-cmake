@@ -29,7 +29,7 @@ git clone https://github.com/Azure/azure-iot-sdk-c.git
 git submodule update --init
 mkdir cmake-build
 pushd cmake-build
-cmake -DCMAKE_INSTALL_PREFIX=../staged -Dskip_samples=ON -Duse_prov_client=ON -Duse_amqp=OFF -Duse_http=ON -Duse_mqtt=ON -Dbuild_service_client=OFF -Dbuild_provisioning_service_client=OFF ..
+cmake -DCMAKE_INSTALL_PREFIX=../staged -Duse_baltimore_cert=ON -Dskip_samples=ON -Duse_prov_client=ON -Duse_amqp=OFF -Duse_http=ON -Duse_mqtt=ON -Dbuild_service_client=OFF -Dbuild_provisioning_service_client=OFF ..
 make -j4
 sudo make install
 popd
