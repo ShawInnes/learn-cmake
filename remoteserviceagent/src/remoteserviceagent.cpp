@@ -1,15 +1,16 @@
+#include <iostream>
 #include <boost/thread.hpp>
 #include <boost/chrono.hpp>
-#include <iostream>
+#include <boost/log/trivial.hpp>
 #include <remoteserviceagent.h>
 #include <version_config.h>
 
 RemoteServiceAgent::RemoteServiceAgent() {
-    std::cout << "RemoteServiceAgent::ctor()" << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << "RemoteServiceAgent::ctor()";
 }
 
 void RemoteServiceAgent::Init() {
-    std::cout << "RemoteServiceAgent->Init()" << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << "RemoteServiceAgent->Init()";
 }
 
 boost::thread *remoteServiceAgentThread;
@@ -19,12 +20,12 @@ void wait(int milliseconds) {
 }
 
 void remoteServiceFunc() {
-    std::cout << "remoteServiceFunc start" << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << "remoteServiceFunc start";
 
     int counter = 0;
 
     for (;;) {
-        std::cout << "remoteServiceFunc " << ++counter << std::endl;
+        BOOST_LOG_TRIVIAL(debug) << "remoteServiceFunc " << ++counter;
 
         try {
             // Sleep and check for interrupt.
@@ -34,24 +35,26 @@ void remoteServiceFunc() {
             wait(500);
         }
         catch (boost::thread_interrupted &) {
-            std::cout << "remoteServiceFunc cleanup (2000ms)" << std::endl;
+            BOOST_LOG_TRIVIAL(debug) << "remoteServiceFunc cleanup (2000ms)";
             wait(2000);
-            std::cout << "remoteServiceFunc exit" << std::endl;
+            BOOST_LOG_TRIVIAL(debug) << "remoteServiceFunc exit";
             return;
         }
     }
 }
 
 void RemoteServiceAgent::Start() {
-    std::cout << "RemoteServiceAgent->Start()\n";
-
+    BOOST_LOG_TRIVIAL(debug) << "RemoteServiceAgent->Start()";
     remoteServiceAgentThread = new boost::thread(&remoteServiceFunc);
 
-    std::cout << "RemoteServiceAgent::Start Done" << std::endl;
+    TestAzureIoT * iot = new TestAzureIoT();
+    iot->Init();
+
+    BOOST_LOG_TRIVIAL(debug) << "RemoteServiceAgent::Start Done";
 }
 
 void RemoteServiceAgent::Stop() {
-    std::cout << "RemoteServiceAgent->Stop()\n";
+    BOOST_LOG_TRIVIAL(debug) << "RemoteServiceAgent->Stop()";
 
     // signal thread to stop
     remoteServiceAgentThread->interrupt();
@@ -59,5 +62,5 @@ void RemoteServiceAgent::Stop() {
     // wait until thread actually exits
     remoteServiceAgentThread->join();
 
-    std::cout << "RemoteServiceAgent::Stop Done" << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << "RemoteServiceAgent::Stop Done";
 }
